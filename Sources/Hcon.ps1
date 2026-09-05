@@ -57,7 +57,7 @@ function ConvertFrom-Hcon {
 			}
 		}
 
-		$result
+		return $result
 	}
 }
 
