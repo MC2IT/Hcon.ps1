@@ -23,3 +23,43 @@ function ConvertFrom-Hcon {
 		# TODO
 	}
 }
+
+<#
+.SYNOPSIS
+	Deep-merges a source (HCON string or hash table) into a target.
+.OUTPUTS
+	The target.
+#>
+function Merge-Hcon {
+	param (
+		# TODO
+		[object] $Source,
+
+		# TODO
+		[object] $Target
+	)
+
+	# TODO
+}
+
+<#
+.SYNOPSIS
+	Splits an HCON-aware string at top-level commas.
+	Commas inside `[]`, `()`, `<.../>`, `"..."`, `'...'` are preserved.
+.INPUTS
+	The HCON string to split.
+.OUTPUTS
+	TODO
+#>
+function Split-Hcon {
+	param (
+		# The HCON string to split.
+		[Parameter(Mandatory, Position = 1, ValueFromPipeline)]
+		[AllowEmptyString()]
+		[string] $InputObject
+	)
+
+	process {
+		$InputObject -split ",(?![^\[]*\])(?![^(]*\))(?![^<]*\/>)(?=(?:[^""']|""[^""]*""|'[^']*')*$)"
+	}
+}
