@@ -23,3 +23,5 @@ $hcon | ConvertFrom-Hcon | Write-Output
 $json = '{"FirstName": "Cédric", "LastName": "Belin", "Company": "MC2IT", "IsDeveloper": true}'
 $json | ConvertFrom-Hcon | Write-Output
 ```
+
+And that's it! 😊
