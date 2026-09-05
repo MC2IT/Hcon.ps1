@@ -21,7 +21,7 @@ function ConvertFrom-Hcon {
 	)
 
 	begin {
-		$getGroupValue = { param ([Match] $match, [int] $index) $value = $match.Groups[$index]?.Value; $value ? $value : $null }
+		$getGroup = { param ([Match] $match, [int] $index) $value = $match.Groups[$index]?.Value; $value ? $value : $null }
 		$hconPattern = "(?:""([^""]+)""|'([^']+)'|([^\s,:]+))(?:\s*:\s*(?:""([^""]*)""|'([^']*)'|<((?:[^/]|\/(?!>))+)\/>|([^\s,]+)))?(?=\s|,|$)"
 	}
 
@@ -32,13 +32,13 @@ function ConvertFrom-Hcon {
 
 		$result = @{}
 		foreach ($match in [regex]::Matches($hcon, $hconPattern)) {
-			$doubleQuotedKey = & $getGroupValue $match 1 # "key"
-			$singleQuotedKey = & $getGroupValue $match 2 # 'key'
-			$bareKey = & $getGroupValue $match 3 # key
-			$doubleQuotedValue = & $getGroupValue $match 4 # "value"
-			$singleQuotedValue = & $getGroupValue $match 5 # 'value'
-			$hyperscriptValue = & $getGroupValue $match 6 # <value/>
-			$bareValue = & $getGroupValue $match 7 # value
+			$doubleQuotedKey = & $getGroup $match 1 # "key"
+			$singleQuotedKey = & $getGroup $match 2 # 'key'
+			$bareKey = & $getGroup $match 3 # key
+			$doubleQuotedValue = & $getGroup $match 4 # "value"
+			$singleQuotedValue = & $getGroup $match 5 # 'value'
+			$hyperscriptValue = & $getGroup $match 6 # <value/>
+			$bareValue = & $getGroup $match 7 # value
 
 			$key = $doubleQuotedKey ?? $singleQuotedKey ?? $bareKey
 			$value = ($doubleQuotedValue ?? $singleQuotedValue ?? $hyperscriptValue ?? $bareValue ?? "true").Trim()
