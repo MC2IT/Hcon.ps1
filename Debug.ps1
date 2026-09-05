@@ -1,5 +1,5 @@
 #!/usr/bin/env pwsh
-using module ./Lcov.psd1
+using module ./Hcon.psd1
 
 $ErrorActionPreference = "Stop"
 $PSNativeCommandUseErrorActionPreference = $true
