@@ -17,7 +17,11 @@ function ConvertFrom-Hcon {
 		# The HCON-formatted string to convert.
 		[Parameter(Mandatory, Position = 1, ValueFromPipeline)]
 		[AllowEmptyString()]
-		[string] $InputObject
+		[string] $InputObject,
+
+		# The maximum depth the HCON input is allowed to have.
+		[ValidateRange("Positive")]
+		[int] $Depth = 1024
 	)
 
 	begin {
@@ -28,7 +32,7 @@ function ConvertFrom-Hcon {
 	process {
 		$hcon = $InputObject.Trim()
 		if (-not $hcon) { return @{} }
-		if ($hcon -like "{*") { return ConvertFrom-Json $hcon -AsHashtable -Depth 10 }
+		if ($hcon -like "{*") { return ConvertFrom-Json $hcon -AsHashtable -Depth $Depth }
 
 		$result = @{}
 		foreach ($match in [regex]::Matches($hcon, $hconPattern)) {
@@ -42,7 +46,7 @@ function ConvertFrom-Hcon {
 
 			$key = $doubleQuotedKey ?? $singleQuotedKey ?? $bareKey
 			$value = ($doubleQuotedValue ?? $singleQuotedValue ?? $hyperscriptValue ?? $bareValue ?? "true").Trim()
-			try { $value = ConvertFrom-Json $value -AsHashtable -Depth 10 -ErrorAction Stop } catch {}
+			try { $value = ConvertFrom-Json $value -AsHashtable -Depth $Depth -ErrorAction Stop } catch {}
 
 			if ($bareKey -notlike "*.*") { Merge-Hcon @{ $key = $value } $result }
 			else {
