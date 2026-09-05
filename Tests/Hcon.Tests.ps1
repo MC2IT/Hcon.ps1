@@ -18,15 +18,3 @@ Describe "ConvertFrom-Hcon" {
 		Should-BeEquivalent $expected (ConvertFrom-Hcon $hcon)
 	}
 }
-
-<#
-.SYNOPSIS
-	Tests the features of the `Merge-Hcon` cmdlet.
-#>
-Describe "Merge-Hcon" {
-	BeforeAll { . "$PSScriptRoot/../Sources/Hcon.ps1" }
-
-	It "TODO" {
-		# TODO
-	}
-}
