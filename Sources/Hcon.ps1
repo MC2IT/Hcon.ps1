@@ -48,12 +48,12 @@ function ConvertFrom-Hcon {
 			$value = ($doubleQuotedValue ?? $singleQuotedValue ?? $hyperscriptValue ?? $bareValue ?? "true").Trim()
 			try { $value = ConvertFrom-Json $value -AsHashtable -Depth $Depth -ErrorAction Stop } catch {}
 
-			if ($bareKey -notlike "*.*") { Merge-Hcon @{ $key = $value } $result }
+			if ($bareKey -notlike "*.*") { Merge-Hashtable @{ $key = $value } $result }
 			else {
 				$pair = $value
 				$segments = $key -split "\."
 				for ($index = $segments.Count - 1; $index -ge 0; $index--) { $pair = @{ $segments[$index] = $pair } }
-				Merge-Hcon $pair $result
+				Merge-Hashtable $pair $result
 			}
 		}
 
@@ -69,7 +69,7 @@ function ConvertFrom-Hcon {
 .OUTPUTS
 	The target hash table.
 #>
-function Merge-Hcon {
+function Merge-Hashtable {
 	[CmdletBinding()]
 	[OutputType([void])]
 	param (
@@ -85,7 +85,7 @@ function Merge-Hcon {
 	process {
 		foreach ($key in $Source.Keys) {
 			$value = $Source[$key]
-			if (($value -is [hashtable]) -and ($Target[$key] -is [hashtable])) { Merge-Hcon $value $Target[$key] }
+			if (($value -is [hashtable]) -and ($Target[$key] -is [hashtable])) { Merge-Hashtable $value $Target[$key] }
 			else { $Target[$key] = $value }
 		}
 	}
