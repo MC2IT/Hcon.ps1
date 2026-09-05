@@ -4,6 +4,10 @@
 #>
 using module Mc2it.Hcon
 
-$hcon = "innerHTML swap:200ms settle:100ms"
-$hashtable = $hcon | ConvertFrom-Hcon
-Write-Output $hashtable
+# Using a HCON-formatted string...
+$hcon = "FirstName:Cédric LastName:Belin Company:MC2IT IsDeveloper"
+$hcon | ConvertFrom-Hcon | Write-Output
+
+# Using a JSON-formatted string...
+$json = '{"FirstName": "Cédric", "LastName": "Belin", "Company": "MC2IT", "IsDeveloper": true}'
+$json | ConvertFrom-Hcon | Write-Output
