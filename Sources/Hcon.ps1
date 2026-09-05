@@ -1,65 +1,88 @@
-﻿<#
+﻿using namespace System.Diagnostics.CodeAnalysis
+using namespace System.Text.RegularExpressions
+
+<#
 .SYNOPSIS
-	Converts a HCON-formatted string to a custom object or hash table.
+	Converts a HCON-formatted string to a hash table.
 .INPUTS
-	The HCON string to convert to a custom object or hash table.
+	The HCON-formatted string to convert.
 .OUTPUTS
-	The custom object or hash table corresponding to the specified HCON string.
+	The hash table corresponding to the specified HCON-formatted string.
 #>
 function ConvertFrom-Hcon {
 	[CmdletBinding()]
 	[OutputType([hashtable])]
-	[OutputType([psobject])]
+	[SuppressMessage("PSAvoidUsingEmptyCatchBlock", "")]
 	param (
-		# The HCON string to convert to a custom object or hash table.
-		[Parameter(Mandatory, Position = 1, ValueFromPipeline)]
-		[string] $InputObject,
-
-		# Value indicating whether to convert the HCON to a hash table.
-		[switch] $AsHashtable
-	)
-
-	process {
-		# TODO
-	}
-}
-
-<#
-.SYNOPSIS
-	Deep-merges a source (HCON string or hash table) into a target.
-.OUTPUTS
-	The target.
-#>
-function Merge-Hcon {
-	param (
-		# TODO
-		[object] $Source,
-
-		# TODO
-		[object] $Target
-	)
-
-	# TODO
-}
-
-<#
-.SYNOPSIS
-	Splits an HCON-aware string at top-level commas.
-	Commas inside `[]`, `()`, `<.../>`, `"..."`, `'...'` are preserved.
-.INPUTS
-	The HCON string to split.
-.OUTPUTS
-	TODO
-#>
-function Split-Hcon {
-	param (
-		# The HCON string to split.
+		# The HCON-formatted string to convert.
 		[Parameter(Mandatory, Position = 1, ValueFromPipeline)]
 		[AllowEmptyString()]
 		[string] $InputObject
 	)
 
+	begin {
+		$getGroupValue = { param ([Match] $match, [int] $index) $value = $match.Groups[$index]?.Value; $value ? $value : $null }
+		$hconPattern = "(?:""([^""]+)""|'([^']+)'|([^\s,:]+))(?:\s*:\s*(?:""([^""]*)""|'([^']*)'|<((?:[^/]|\/(?!>))+)\/>|([^\s,]+)))?(?=\s|,|$)"
+	}
+
 	process {
-		$InputObject -split ",(?![^\[]*\])(?![^(]*\))(?![^<]*\/>)(?=(?:[^""']|""[^""]*""|'[^']*')*$)"
+		$hcon = $InputObject.Trim()
+		if (-not $hcon) { return @{} }
+		if ($hcon -like "{*") { return ConvertFrom-Json $hcon -AsHashtable -Depth 10 }
+
+		$result = @{}
+		foreach ($match in [regex]::Matches($hcon, $hconPattern)) {
+			$doubleQuotedKey = & $getGroupValue $match 1 # "key"
+			$singleQuotedKey = & $getGroupValue $match 2 # 'key'
+			$bareKey = & $getGroupValue $match 3 # key
+			$doubleQuotedValue = & $getGroupValue $match 4 # "value"
+			$singleQuotedValue = & $getGroupValue $match 5 # 'value'
+			$hyperscriptValue = & $getGroupValue $match 6 # <value/>
+			$bareValue = & $getGroupValue $match 7 # value
+
+			$key = $doubleQuotedKey ?? $singleQuotedKey ?? $bareKey
+			$value = ($doubleQuotedValue ?? $singleQuotedValue ?? $hyperscriptValue ?? $bareValue ?? "true").Trim()
+			try { $value = ConvertFrom-Json $value -AsHashtable -Depth 10 -ErrorAction Stop } catch {}
+
+			if ($bareKey -notlike "*.*") { Merge-Hcon @{ $key = $value } $result }
+			else {
+				$pair = $value
+				$segments = $key -split "\."
+				for ($index = $segments.Count - 1; $index -ge 0; $index--) { $pair = @{ $segments[$index] = $pair } }
+				Merge-Hcon $pair $result
+			}
+		}
+
+		$result
+	}
+}
+
+<#
+.SYNOPSIS
+	Deep-merges a source hash table into a target hash table.
+.INPUTS
+	The source hash table.
+.OUTPUTS
+	The target hash table.
+#>
+function Merge-Hcon {
+	[CmdletBinding()]
+	[OutputType([void])]
+	param (
+		# The source hash table.
+		[Parameter(Mandatory, Position = 1, ValueFromPipeline)]
+		[hashtable] $Source,
+
+		# The target hash table.
+		[Parameter(Mandatory, Position = 2)]
+		[hashtable] $Target
+	)
+
+	process {
+		foreach ($key in $Source.Keys) {
+			$value = $Source[$key]
+			if (($value -is [hashtable]) -and ($Target[$key] -is [hashtable])) { Merge-Hcon $value $Target[$key] }
+			else { $Target[$key] = $value }
+		}
 	}
 }
