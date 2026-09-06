@@ -25,8 +25,11 @@ function ConvertFrom-Hcon {
 	)
 
 	begin {
-		$getGroup = { param ([Match] $match, [int] $index) $value = $match.Groups[$index]?.Value; $value ? $value : $null }
 		$hconPattern = "(?:""([^""]+)""|'([^']+)'|([^\s,:]+))(?:\s*:\s*(?:""([^""]*)""|'([^']*)'|<((?:[^/]|\/(?!>))+)\/>|([^\s,]+)))?(?=\s|,|$)"
+		$getGroup = { param ([Match] $match, [int] $index)
+			$value = $match.Groups[$index]?.Value
+			$value ? $value : $null
+		}
 	}
 
 	process {
