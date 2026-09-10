@@ -55,7 +55,7 @@ function ConvertFrom-Hcon {
 			else {
 				$pair = $value
 				$segments = $key -split "\."
-				for ($index = $segments.Count - 1; $index -ge 0; $index--) { $pair = @{ $segments[$index] = $pair } }
+				foreach ($index in ($segments.Count - 1)..0) { $pair = @{ $segments[$index] = $pair } }
 				Merge-HconHashtable $pair $result
 			}
 		}
