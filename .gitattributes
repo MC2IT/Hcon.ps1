@@ -5,9 +5,10 @@
 *.cs text diff=csharp
 *.csproj text
 *.css text diff=css
+*.fs text
+*.fsx text
 *.html text diff=html
 *.http text
-*.info text
 *.ini text
 *.js text
 *.json text
