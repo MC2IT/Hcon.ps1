@@ -5,7 +5,7 @@ Parse [HCON](https://four.htmx.org/docs/hcon-guide) (htmx Configuration Object N
 Install the latest version of **HCON for PowerShell**
 with [PSResourceGet](https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.psresourceget) package manager:
 
-```shell
+```powershell
 Install-PSResource Mc2it.Hcon
 ```
 
