@@ -32,7 +32,7 @@ type ConvertFromHconCommand() =
       this.WriteObject (OrderedHashtable())
     elif hcon[0] = '{' then
       let json = ConvertFromJsonCommand(InputObject = hcon, AsHashtable = true, Depth = this.Depth)
-      this.WriteObject (json.Invoke<OrderedHashtable>() |> Seq.head)
+      json.Invoke<OrderedHashtable>() |> Seq.head |> this.WriteObject
     else
       let getGroup (hconMatch: Match) (index: int): string option =
         let value = hconMatch.Groups[index].Value
@@ -42,11 +42,16 @@ type ConvertFromHconCommand() =
       for hconMatch in hconPattern.Matches hcon do
         let doubleQuotedKey = getGroup hconMatch 1 // "key"
         let singleQuotedKey = getGroup hconMatch 2 // 'key'
-        let bareKey = getGroup hconMatch 3 // key
+        let bareKey = getGroup hconMatch 3 |> Option.toObj |> nonNull // key
         let doubleQuotedValue = getGroup hconMatch 4 // "value"
         let singleQuotedValue = getGroup hconMatch 5 // 'value'
         let hyperscriptValue = getGroup hconMatch 6 // <value/>
         let bareValue = getGroup hconMatch 7 // value
+
+        let key =
+          doubleQuotedKey
+          |> Option.orElse singleQuotedKey
+          |> Option.defaultValue bareKey
 
         let value =
           doubleQuotedValue
@@ -58,19 +63,21 @@ type ConvertFromHconCommand() =
 
         // try { value = ConvertFrom-Json value -AsHashtable -Depth Depth -ErrorAction Stop } catch {}
 
-        let key =
-          doubleQuotedKey
-          |> Option.orElse singleQuotedKey
-          |> Option.orElse bareKey
-          |> Option.defaultValue ""
+        if not (bareKey.Contains '.') then
+          // mergeHashtables @{ key = value } hashtable
+          ()
+        else
+          let pair = value
+          let segments = key.Split '.'
+          // mergeHashtables pair hashtable
+          ()
 
-        // if (bareKey -notlike "*.*") { Merge-HconHashtable @{ key = value } result }
+        // if (bareKey -notlike "*.*") { Merge-HconHashtable @{ key = value } hashtable }
         // else {
         //   pair = value
         //   segments = key -split "\."
         //   foreach (index in (segments.Count - 1)..0) { pair = @{ segments[index] = pair } }
-        //   Merge-HconHashtable pair result
+        //   Merge-HconHashtable pair hashtable
         // }
-        ()
 
       this.WriteObject hashtable
