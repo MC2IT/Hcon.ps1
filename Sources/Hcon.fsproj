@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<Company>MC2IT</Company>
+		<Copyright>© MC2IT</Copyright>
+		<Description>Parse HCON (htmx Configuration Object Notation) in PowerShell.</Description>
+		<Product>Belin CLI</Product>
+		<Version>6.1.0</Version>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+		<AssemblyName>Mc2it.Hcon</AssemblyName>
+		<CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
+		<HotReloadAutoRestart>true</HotReloadAutoRestart>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<OutDir>../Binaries</OutDir>
+		<RootNamespace>Mc2it.Hcon</RootNamespace>
+		<SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+		<TargetFramework>net10.0</TargetFramework>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<InternalsVisibleTo Include="$(AssemblyName).Tests" />
+		<PackageReference Include="Microsoft.PowerShell.Commands.Utility" Version="7.6.2" />
+		<PackageReference Include="System.Management.Automation" Version="7.6.2" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Compile Include="ConvertFrom-Hcon.fs" />
+	</ItemGroup>
+</Project>

@@ -1,7 +1,7 @@
 @{
 	ModuleVersion = "1.0.0"
 	PowerShellVersion = "7.6"
-	RootModule = "Sources/Main.psm1"
+	RootModule = "Binaries/Mc2it.Hcon.dll"
 
 	Author = "MC2IT <dev@mc2it.com>"
 	CompanyName = "MC2IT"
@@ -10,9 +10,13 @@
 	GUID = "45b55757-d920-4ffd-b6c0-0783a692b10b"
 
 	AliasesToExport = @()
-	CmdletsToExport = @()
-	FunctionsToExport = , "ConvertFrom-Hcon"
+	CmdletsToExport = , "ConvertFrom-Hcon"
+	FunctionsToExport = @()
 	VariablesToExport = @()
+
+	RequiredModules = @(
+		@{ ModuleName = "Belin.FSharp"; ModuleVersion = "10.1.401" }
+	)
 
 	PrivateData = @{
 		PSData = @{
