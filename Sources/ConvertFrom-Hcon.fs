@@ -26,7 +26,7 @@ type ConvertFromHconCommand() =
   member val InputObject = "" with get, set
 
   /// Performs execution of this command.
-  override this.ProcessRecord() =
+  override this.ProcessRecord () =
     let hcon = this.InputObject.Trim()
     if hcon.Length = 0 then
       this.WriteObject (OrderedHashtable())
