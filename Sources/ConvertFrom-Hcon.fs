@@ -6,8 +6,7 @@ open System.Management.Automation
 open System.Text.RegularExpressions
 
 /// Converts a HCON-formatted string to a hash table.
-[<Cmdlet(VerbsData.ConvertFrom, "Hcon")>]
-[<OutputType(typeof<OrderedHashtable>)>]
+[<Cmdlet(VerbsData.ConvertFrom, "Hcon"); OutputType(typeof<OrderedHashtable>)>]
 type ConvertFromHconCommand() =
   inherit Cmdlet()
 
