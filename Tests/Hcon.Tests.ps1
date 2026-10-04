@@ -15,6 +15,6 @@ Describe "ConvertFrom-Hcon" {
 		@{ Hcon = 'credentials:"include", timeout:5000'; Expected = @{ credentials = "include"; timeout = 5000 } }
 		@{ Hcon = "token:'abc' retry:3"; Expected = @{ token = "abc"; retry = 3 } }
 	) {
-		Should-BeEquivalent $expected (ConvertFrom-Hcon $hcon)
+		$hcon | ConvertFrom-Hcon | Should-BeEquivalent $expected
 	}
 }
