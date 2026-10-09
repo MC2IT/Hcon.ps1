@@ -42,14 +42,14 @@ function ConvertFrom-Hcon {
 		if ($hcon -like "{*") { return ConvertFrom-Json $hcon -AsHashtable -Depth $Depth }
 
 		$target = [OrderedHashtable]::new()
-		foreach ($match in [regex]::Matches($hcon, $hconPattern)) {
-			$doubleQuotedKey = & $getMatchGroup $match 1 # "key"
-			$singleQuotedKey = & $getMatchGroup $match 2 # 'key'
-			$bareKey = & $getMatchGroup $match 3 # key
-			$doubleQuotedValue = & $getMatchGroup $match 4 # "value"
-			$singleQuotedValue = & $getMatchGroup $match 5 # 'value'
-			$hyperscriptValue = & $getMatchGroup $match 6 # <value/>
-			$bareValue = & $getMatchGroup $match 7 # value
+		[regex]::Matches($hcon, $hconPattern) | ForEach-Object {
+			$doubleQuotedKey = & $getMatchGroup $_ 1 # "key"
+			$singleQuotedKey = & $getMatchGroup $_ 2 # 'key'
+			$bareKey = & $getMatchGroup $_ 3 # key
+			$doubleQuotedValue = & $getMatchGroup $_ 4 # "value"
+			$singleQuotedValue = & $getMatchGroup $_ 5 # 'value'
+			$hyperscriptValue = & $getMatchGroup $_ 6 # <value/>
+			$bareValue = & $getMatchGroup $_ 7 # value
 
 			$key = $doubleQuotedKey ?? $singleQuotedKey ?? $bareKey
 			$value = ($doubleQuotedValue ?? $singleQuotedValue ?? $hyperscriptValue ?? $bareValue ?? "true").Trim()
@@ -63,9 +63,9 @@ function ConvertFrom-Hcon {
 			else {
 				$source = $value
 				$segments = $key -split "\."
-				foreach ($index in ($segments.Count - 1)..0) {
+				($segments.Count - 1)..0 | ForEach-Object {
 					$hashtable = [OrderedHashtable]::new()
-					$hashtable[$segments[$index]] = $source
+					$hashtable[$segments[$_]] = $source
 					$source = $hashtable
 				}
 
@@ -99,10 +99,10 @@ function Merge-HconHashtable {
 	)
 
 	process {
-		foreach ($key in $Source.Keys) {
-			$value = $Source[$key]
-			if (($value -is [hashtable]) -and ($Target[$key] -is [hashtable])) { Merge-HconHashtable $value $Target[$key] }
-			else { $Target[$key] = $value }
+		$Source.Keys | ForEach-Object {
+			$value = $Source[$_]
+			if (($value -is [hashtable]) -and ($Target[$_] -is [hashtable])) { Merge-HconHashtable $value $Target[$_] }
+			else { $Target[$_] = $value }
 		}
 	}
 }
