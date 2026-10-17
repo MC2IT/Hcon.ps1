@@ -15,7 +15,7 @@ For detailed instructions, see the [installation guide](Installation.md).
 This module provides the `ConvertFrom-Hcon` cmdlet, which allows you to convert a [HCON-formatted string](https://four.htmx.org/docs/hcon-guide) to a hash table:
 
 ```powershell
-using module Mc2it.Hcon
+Import-Module Mc2it.Hcon
 
 # Using a HCON-formatted string...
 $hcon = "FirstName:Cédric LastName:Belin Company:MC2IT IsDeveloper"
