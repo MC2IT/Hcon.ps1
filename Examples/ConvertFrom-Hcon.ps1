@@ -2,7 +2,7 @@
 .SYNOPSIS
 	Converts the specified HCON-formatted string to a hash table.
 #>
-using module Mc2it.Hcon
+Import-Module Mc2it.Hcon
 
 # Using a HCON-formatted string...
 $hcon = "FirstName:Cédric LastName:Belin Company:MC2IT IsDeveloper"
