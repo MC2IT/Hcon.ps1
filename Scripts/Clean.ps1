@@ -1,2 +1,2 @@
-"Deleting all generated files..."
+Write-Information "Deleting all generated files..."
 Remove-Item Temp/* -Exclude .gitkeep -Force -Recurse

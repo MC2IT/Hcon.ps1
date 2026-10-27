@@ -12,7 +12,7 @@ param (
 		$module = Import-PowerShellDataFile "$PSScriptRoot/Html.psd1"
 		$cmdlets = $module.CmdletsToExport + $module.FunctionsToExport
 		$cmdlets -contains $_
-	}, ErrorMessage = "The specified command does not exist.")]
+	}, ErrorMessage = "The specified script does not exist.")]
 	[string] $Command,
 
 	# The parameters of the cmdlet to run.
