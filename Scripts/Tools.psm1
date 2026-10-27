@@ -1,19 +1,68 @@
-using namespace System.Diagnostics.CodeAnalysis
+<#
+.SYNOPSIS
+	The cached contents of the module manifest.
+#>
+[hashtable] $Script:Manifest = $null
 
 <#
 .SYNOPSIS
-	Creates a new Git tag.
+	Gets the path, or the contents, of the module manifest.
+.OUTPUTS
+	[string] The path to the module manifest.
+.OUTPUTS
+	[hashtable] The contents of the module manifest.
 #>
-function New-GitTag {
-	[SuppressMessage("PSUseShouldProcessForStateChangingFunctions", "")]
+function Get-Manifest {
+	[CmdletBinding(DefaultParameterSetName = "Default")]
+	[OutputType([hashtable], [string])]
 	param (
-		# The tag name.
-		[Parameter(Mandatory, Position = 1)]
-		[string] $Name
+		# Value indicating whether to return the module data instead of its path.
+		[Parameter(ParameterSetName = "AsHashtable")]
+		[switch] $AsHashtable
 	)
 
-	git tag $Name
-	git push origin $Name
+	if ($null -eq $Script:Manifest) {
+		$path =
+			Get-ChildItem (Join-Path $PSScriptRoot ..) -File -Filter *.psd1
+			| Where-Object BaseName -NotIn "PSModules", "PSScriptAnalyzerSettings"
+			| Select-Object -ExpandProperty FullName -First 1
+
+		$Script:Manifest = @{
+			Data = Import-PowerShellDataFile $path
+			Path = $path
+		}
+	}
+
+	$AsHashtable ? $Script:Manifest.Data : $Script:Manifest.Path
+}
+
+<#
+.SYNOPSIS
+	Gets the path to the solution file.
+.OUTPUTS
+	The path to the solution file.
+#>
+function Get-Solution {
+	[CmdletBinding()]
+	[OutputType([string])]
+	param ()
+
+	Get-ChildItem (Join-Path $PSScriptRoot ..) -File -Filter *.slnx
+	| Select-Object -ExpandProperty FullName -First 1
+}
+
+<#
+.SYNOPSIS
+	Gets the project version number.
+.OUTPUTS
+	The project version number.
+#>
+function Get-Version {
+	[CmdletBinding()]
+	[OutputType([version])]
+	param ()
+
+	[version]::Parse((Get-Manifest -AsHashtable).ModuleVersion)
 }
 
 <#
