@@ -1,4 +1,4 @@
-using module ./Cmdlets.psm1
+using module ./Tools.psm1
 & "$PSScriptRoot/Default.ps1"
 
 "Publishing the package..."
