@@ -1,6 +1,6 @@
 @{
 	ModuleVersion = "2026.10.0"
-	PowerShellVersion = "7.6"
+	PowerShellVersion = "7.7"
 	RootModule = "Sources/Main.psm1"
 
 	Author = "MC2IT <dev@mc2it.com>"
